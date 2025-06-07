@@ -19,6 +19,10 @@ function login () {
   document.getElementById("login").classList.add("gone");
   document.getElementById("logout").classList.remove("gone");
   document.getElementById("wish").classList.remove("gone");
+
+  const myModalEl = document.getElementById('modalLogin');
+  const modal = bootstrap.Modal.getInstance(myModalEl)
+  modal.hide();
 }
 
 window.addEventListener('load', function () {
@@ -32,4 +36,3 @@ window.addEventListener('load', function () {
   document.getElementById("navbar").classList.remove('invisible');
   document.getElementById("loading").classList.add('invisible');
 });
-

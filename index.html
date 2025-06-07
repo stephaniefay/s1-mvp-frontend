@@ -46,7 +46,7 @@
         <a class="nav-link" href="#">Wish</a>
       </li>
       <li id="login" class="nav-item">
-        <a class="nav-link" href="#" onclick="login()">Login</a>
+        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalLogin">Login</a>
       </li>
       <li id="logout" class="nav-item gone">
         <a class="nav-link" href="#">Logout</a>
@@ -56,7 +56,6 @@
 </nav>
 
 <div id="content" class="container invisible">
-
 
 
 </div>
@@ -79,6 +78,32 @@
   </div>
 </div>
 
+<div class="modal fade" id="modalLogin" tabindex="-1" aria-hidden="true">
+  <form class="needs-validation">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Login</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="form-floating mb-3">
+            <input type="email" class="form-control" id="email" placeholder="name@example.com">
+            <label for="email">Email</label>
+          </div>
+          <div class="form-floating">
+            <input type="password" class="form-control" id="password" placeholder="Password">
+            <label for="password">Senha</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button class="btn btn-primary" onclick="login()">Login</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
 
 </body>
 
