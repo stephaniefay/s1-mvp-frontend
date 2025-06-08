@@ -34,7 +34,7 @@ function cleanContainer() {
   content.innerHTML = '';
 }
 
-function loadindAnimation() {
+function loadingAnimation() {
   cleanContainer();
 
   const content = document.getElementById('content');
@@ -75,6 +75,8 @@ function showErrorToast(messageStr) {
 }
 
 // interactive functions
+
+// user related functions
 function login() {
   doLogin().then(
     function (value) {
@@ -91,8 +93,9 @@ function login() {
   );
 }
 
+// collection functions
 function loadCollectionIndexes() {
-  loadindAnimation();
+  loadingAnimation();
 
   loadCollections().then(
     function (collections) {
@@ -134,6 +137,7 @@ function loadCollectionIndexes() {
 
         card.appendChild(cardBody);
 
+        // list
         const cardList = document.createElement('ul');
         cardList.classList.add('list-group', 'list-group-flush');
 
@@ -237,14 +241,13 @@ function createItemLegalities (titleStr, legalitiesObj) {
   return component;
 }
 
-function loadCollectionCards(collection, searchTerm) {
-  loadindAnimation();
+function loadCollectionCards(collectionObj, searchTerm) {
+  loadingAnimation();
 
-  loadCardsFromCollection(collection.id, searchTerm).then(
+  loadCardsFromCollection(collectionObj.id, searchTerm).then(
     function (cards) {
       const content = document.getElementById('content');
 
-      // cleaning container to new info
       cleanContainer();
 
       // breadcrumb
@@ -267,7 +270,7 @@ function loadCollectionCards(collection, searchTerm) {
       const collection = document.createElement('li');
       collection.classList.add('breadcrumb-item', 'active');
       collection.ariaCurrent = 'page';
-      collection.innerText = collection.name;
+      collection.innerText = collectionObj.name;
 
       ol.appendChild(home);
       ol.appendChild(collection);
@@ -289,7 +292,7 @@ function loadCollectionCards(collection, searchTerm) {
         cardImg.src = cards[index].images.large;
         cardImg.alt = 'card-' + cards[index].id;
         cardImg.style.setProperty('cursor', 'pointer');
-        cardImg.addEventListener('click', () => loadCardInfo(cards[index]));
+        cardImg.addEventListener('click', () => loadCardInfo(collectionObj, cards[index]));
 
         card.appendChild(cardImg);
         grid.appendChild(card);
@@ -303,8 +306,51 @@ function loadCollectionCards(collection, searchTerm) {
   )
 }
 
-function loadCardInfo(card) {
-  console.log(card);
+// card functions
+function loadCardInfo(collectionObj, cardObj) {
+  cleanContainer();
+  const content = document.getElementById('content');
+
+  // breadcrumb
+  const nav = document.createElement('nav');
+  nav.ariaLabel = 'breadcrumb';
+
+  const ol = document.createElement('ol');
+  ol.classList.add('breadcrumb', 'bg-info');
+
+  const home = document.createElement('li');
+  home.classList.add('breadcrumb-item')
+
+  const homeLink = document.createElement('a');
+  homeLink.href = '#';
+  homeLink.addEventListener('click', () => loadCollectionIndexes());
+  homeLink.innerText = 'Coleções';
+
+  home.appendChild(homeLink);
+
+  const collection = document.createElement('li');
+  collection.classList.add('breadcrumb-item')
+
+  const collectionLink = document.createElement('a');
+  collectionLink.href = '#';
+  collectionLink.addEventListener('click', () => loadCollectionCards(collectionObj, ''));
+  collectionLink.innerText = collectionObj.name;
+
+  collection.appendChild(collectionLink);
+
+  const card = document.createElement('li');
+  card.classList.add('breadcrumb-item', 'active');
+  card.ariaCurrent = 'page';
+  card.innerText = cardObj.name;
+
+  ol.appendChild(home);
+  ol.appendChild(collection);
+  ol.appendChild(card);
+
+  nav.appendChild(ol);
+
+  content.appendChild(nav);
+
 }
 
 
