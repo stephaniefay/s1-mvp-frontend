@@ -6,8 +6,25 @@ html, body {
   display: flex;
 }
 
-.gone {
-  display: none !important;
+.container {
+  margin-top: 5rem;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer {
+  justify-content: center;
+  display: grid;
+}
+
+.card img {
+  max-height: 150px;
+  object-fit: contain;
+  padding-top: 20px;
 }
 
 .bottomLeft {
@@ -20,10 +37,9 @@ html, body {
 }
 
 .center {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
 }
 
 .loader {
