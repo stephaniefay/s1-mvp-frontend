@@ -241,6 +241,30 @@ function createItemLegalities (titleStr, legalitiesObj) {
   return component;
 }
 
+function loadNavigationCollectionLevel(collectionObj) {
+  const ol = document.createElement('ol');
+  ol.classList.add('breadcrumb', 'bg-info');
+
+  const home = document.createElement('li');
+  home.classList.add('breadcrumb-item')
+
+  const homeLink = document.createElement('a');
+  homeLink.href = '#';
+  homeLink.addEventListener('click', () => loadCollectionIndexes());
+  homeLink.innerText = 'Coleções';
+
+  home.appendChild(homeLink);
+
+  const collection = document.createElement('li');
+  collection.classList.add('breadcrumb-item', 'active');
+  collection.ariaCurrent = 'page';
+  collection.innerText = collectionObj.name;
+
+  ol.appendChild(home);
+  ol.appendChild(collection);
+  return ol;
+}
+
 function loadCollectionCards(collectionObj, searchTerm) {
   loadingAnimation();
 
@@ -254,26 +278,7 @@ function loadCollectionCards(collectionObj, searchTerm) {
       const nav = document.createElement('nav');
       nav.ariaLabel = 'breadcrumb';
 
-      const ol = document.createElement('ol');
-      ol.classList.add('breadcrumb', 'bg-info');
-
-      const home = document.createElement('li');
-      home.classList.add('breadcrumb-item')
-
-      const homeLink = document.createElement('a');
-      homeLink.href = '#';
-      homeLink.addEventListener('click', () => loadCollectionIndexes());
-      homeLink.innerText = 'Coleções';
-
-      home.appendChild(homeLink);
-
-      const collection = document.createElement('li');
-      collection.classList.add('breadcrumb-item', 'active');
-      collection.ariaCurrent = 'page';
-      collection.innerText = collectionObj.name;
-
-      ol.appendChild(home);
-      ol.appendChild(collection);
+      const ol = loadNavigationCollectionLevel(collectionObj);
 
       nav.appendChild(ol);
 
@@ -315,6 +320,15 @@ function loadCardInfo(collectionObj, cardObj) {
   const nav = document.createElement('nav');
   nav.ariaLabel = 'breadcrumb';
 
+  const ol = loadNavigationCardLevel(collectionObj, cardObj);
+
+  nav.appendChild(ol);
+  content.appendChild(nav);
+
+
+}
+
+function loadNavigationCardLevel(collectionObj, cardObj) {
   const ol = document.createElement('ol');
   ol.classList.add('breadcrumb', 'bg-info');
 
@@ -347,10 +361,7 @@ function loadCardInfo(collectionObj, cardObj) {
   ol.appendChild(collection);
   ol.appendChild(card);
 
-  nav.appendChild(ol);
-
-  content.appendChild(nav);
-
+  return ol;
 }
 
 
