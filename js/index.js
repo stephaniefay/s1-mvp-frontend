@@ -29,19 +29,39 @@ function changeTheme(theme) {
   }
 }
 
+function cleanContainer() {
+  const content = document.getElementById('content');
+  content.innerHTML = '';
+}
+
 function loadindAnimation() {
+  cleanContainer();
+
   const content = document.getElementById('content');
 
-  let html = '<div id="loading" class="center">\n' +
-    '  <div class="loader">\n' +
-    '    <div class="circle"></div>\n' +
-    '    <div class="circle"></div>\n' +
-    '    <div class="circle"></div>\n' +
-    '    <div class="circle"></div>\n' +
-    '  </div>\n' +
-    '</div>'
+  const loadingDiv = document.createElement('div');
+  loadingDiv.id = 'loading';
+  loadingDiv.classList.add('center');
 
-  content.innerHTML = html;
+  const loaderDiv = document.createElement('div');
+  loaderDiv.classList.add('loader');
+
+  const circle1 = document.createElement('div');
+  circle1.classList.add('circle');
+  const circle2 = document.createElement('div');
+  circle2.classList.add('circle');
+  const circle3 = document.createElement('div');
+  circle3.classList.add('circle');
+  const circle4 = document.createElement('div');
+  circle4.classList.add('circle');
+
+  loaderDiv.appendChild(circle1);
+  loaderDiv.appendChild(circle2);
+  loaderDiv.appendChild(circle3);
+  loaderDiv.appendChild(circle4);
+
+  loadingDiv.appendChild(loaderDiv);
+  content.appendChild(loadingDiv);
 }
 
 function showErrorToast(messageStr) {
@@ -75,56 +95,82 @@ function loadCollectionIndexes() {
   loadindAnimation();
 
   loadCollections().then(
-    function (arrayCollections) {
+    function (collections) {
+
+      cleanContainer();
+
       const content = document.getElementById('content');
-      let html = '';
-      let column = 0;
-      for (let index = 0; index < arrayCollections.length; index++) {
-        if (column === 0) {
-          html += '<div class="row justify-content-md-center">';
-        }
 
-        html += '<div class="card col-lg-3 m-2">';
-        html += ' <img src="' + arrayCollections[index].images.logo + '" class="card-img-top" alt="...">';
-        html += '<div class="card-body">';
-        html += '<h5 class="card-title">' + arrayCollections[index].name + '</h5>';
-        html += '<h6 class="card-subtitle mb-2 text-body-secondary">' + arrayCollections[index].id + '</h6>'
-        html += '</div>';
-        html += '<ul class="list-group list-group-flush">'
+      const grid = document.createElement('div');
+      grid.classList.add('row', 'justify-content-md-center');
 
-        // release date
-        html += '<li class="list-group-item"><div class="line"><span>Data lançamento:</span>' + arrayCollections[index].releaseDate + ' </div></li>';
+      for (let index = 0; index < collections.length; index++) {
+        // card
+        const card = document.createElement('div');
+        card.classList.add('card', 'col-lg-3', 'm-2');
 
-        // legalities
-        html += '<li class="list-group-item"><div class="line"><span>Válido:</span>';
-        if (arrayCollections[index].legalities.standard !== undefined)
-          html += '<span class="badge text-bg-primary">standard</span>'
-        if (arrayCollections[index].legalities.expanded !== undefined)
-          html += '<span class="badge text-bg-secondary">expanded</span>'
-        if (arrayCollections[index].legalities.unlimited !== undefined)
-          html += '<span class="badge text-bg-info">unlimited</span>'
-        html += '</div></li>'
+        // top image
+        const cardImg = document.createElement('img');
+        cardImg.classList.add('card-img-top');
+        cardImg.alt = collections[index].name;
+        cardImg.src = collections[index].images.logo;
 
-        // tcgo
-        html += '<li class="list-group-item"><div class="line"><span>Código no TCG Online:</span>' + arrayCollections[index].ptcgoCode + '</div></li>';
+        card.appendChild(cardImg);
 
-        // series
-        html += '<li class="list-group-item"><div class="line"><span>Série:</span>' + arrayCollections[index].series + '</div></li>';
+        // body
+        const cardBody = document.createElement('div');
+        cardBody.classList.add('card-body');
 
-        html += '</ul>';
-        html += '<div class="card-footer footer"><button href="#" class="btn btn-primary" onclick="loadCollectionCards(\'' + arrayCollections[index].id + '\', \'\')">Detalhes</button></div>'
-        html += '</div>';
+        const cardTitle = document.createElement('h5');
+        cardTitle.classList.add('card-title');
+        cardTitle.innerText = collections[index].name;
 
-        column++;
+        const cardSubtitle = document.createElement('h6');
+        cardSubtitle.classList.add('card-subtitle', 'mb-2', 'text-body-secondary');
+        cardSubtitle.innerText = collections[index].id;
 
-        if (column === 3) {
-          html += '</div>';
-          column = 0;
-        }
+        cardBody.appendChild(cardTitle);
+        cardBody.appendChild(cardSubtitle);
 
+        card.appendChild(cardBody);
+
+        const cardList = document.createElement('ul');
+        cardList.classList.add('list-group', 'list-group-flush');
+
+        // item release date
+        const releaseDate = createItem('Data lançamento:', collections[index].releaseDate);
+        cardList.appendChild(releaseDate);
+
+        // item legalities
+        const legalities = createItemLegalities('Válido:', collections[index].legalities);
+        cardList.appendChild(legalities);
+
+        // item tcgo
+        const tcgo = createItem('Código no TCG Online:', collections[index].ptcgoCode);
+        cardList.appendChild(tcgo);
+
+        // item series
+        const series = createItem('Série:', collections[index].series);
+        cardList.appendChild(series);
+
+        card.appendChild(cardList);
+
+        // footer
+        const footer = document.createElement('div');
+        footer.classList.add('card-footer', 'footer');
+
+        const footerButton = document.createElement('button');
+        footerButton.classList.add('btn', 'btn-primary');
+        footerButton.addEventListener('click', () => loadCollectionCards(collections[index]));
+        footerButton.innerText = 'Detalhes';
+
+        footer.appendChild(footerButton);
+        card.appendChild(footer);
+
+        grid.appendChild(card);
       }
 
-      content.innerHTML = html;
+      content.appendChild(grid);
     },
     function (error) {
       showErrorToast('Não foi possível carregar as coleções, {' + error + '}');
@@ -132,27 +178,133 @@ function loadCollectionIndexes() {
   )
 }
 
-function loadCollectionCards(collectionId, searchTerm) {
+function createItem (titleStr, valueStr) {
+  const component = document.createElement('li');
+  component.classList.add('list-group-item');
+
+  const line = document.createElement('div');
+  line.classList.add('line');
+
+  const title = document.createElement('span');
+  title.innerText = titleStr;
+
+  const value = document.createElement('span');
+  value.innerText = valueStr;
+
+  line.appendChild(title);
+  line.appendChild(value);
+
+  component.appendChild(line);
+
+  return component;
+}
+
+function createItemLegalities (titleStr, legalitiesObj) {
+  const component = document.createElement('li');
+  component.classList.add('list-group-item');
+
+  const line = document.createElement('div');
+  line.classList.add('line');
+
+  const title = document.createElement('span');
+  title.innerText = titleStr;
+
+  line.appendChild(title);
+
+  if (legalitiesObj.standard !== undefined) {
+    const standard = document.createElement('span');
+    standard.classList.add('badge', 'text-bg-primary');
+    standard.innerText = 'standard';
+    line.appendChild(standard);
+  }
+
+  if (legalitiesObj.expanded !== undefined) {
+    const expanded = document.createElement('span');
+    expanded.classList.add('badge', 'text-bg-secondary');
+    expanded.innerText = 'expanded';
+    line.appendChild(expanded);
+  }
+
+  if (legalitiesObj.unlimited !== undefined) {
+    const unlimited = document.createElement('span');
+    unlimited.classList.add('badge', 'text-bg-info');
+    unlimited.innerText = 'unlimited';
+    line.appendChild(unlimited);
+  }
+
+  component.appendChild(line);
+
+  return component;
+}
+
+function loadCollectionCards(collection, searchTerm) {
   loadindAnimation();
 
-  loadCardsFromCollection(collectionId, searchTerm).then(
-    function (value) {
+  loadCardsFromCollection(collection.id, searchTerm).then(
+    function (cards) {
       const content = document.getElementById('content');
 
-      let html = '<nav style="--bs-breadcrumb-divider: \'>\';" aria-label="breadcrumb">';
-      html += '<ol class="breadcrumb bg-info">';
-      html += '<li class="breadcrumb-item"><a href="#" onclick="loadCollectionIndexes()">Coleções</a></li>';
-      html += '<li class="breadcrumb-item active" aria-current="page">' + collectionId + '</li>';
-      html += '</ol>';
-      html += '</nav>';
+      // cleaning container to new info
+      cleanContainer();
 
+      // breadcrumb
+      const nav = document.createElement('nav');
+      nav.ariaLabel = 'breadcrumb';
 
-      content.innerHTML = html;
+      const ol = document.createElement('ol');
+      ol.classList.add('breadcrumb', 'bg-info');
+
+      const home = document.createElement('li');
+      home.classList.add('breadcrumb-item')
+
+      const homeLink = document.createElement('a');
+      homeLink.href = '#';
+      homeLink.addEventListener('click', () => loadCollectionIndexes());
+      homeLink.innerText = 'Coleções';
+
+      home.appendChild(homeLink);
+
+      const collection = document.createElement('li');
+      collection.classList.add('breadcrumb-item', 'active');
+      collection.ariaCurrent = 'page';
+      collection.innerText = collection.name;
+
+      ol.appendChild(home);
+      ol.appendChild(collection);
+
+      nav.appendChild(ol);
+
+      content.appendChild(nav);
+
+      // cards
+      const grid = document.createElement('div');
+      grid.classList.add('row', 'justify-content-md-center');
+
+      for (let index = 0; index < cards.length; index++) {
+        const card = document.createElement('div');
+        card.classList.add('col-lg-3', 'mb-2');
+
+        const cardImg = document.createElement('img');
+        cardImg.classList.add('card-image-big', 'zoom');
+        cardImg.src = cards[index].images.large;
+        cardImg.alt = 'card-' + cards[index].id;
+        cardImg.style.setProperty('cursor', 'pointer');
+        cardImg.addEventListener('click', () => loadCardInfo(cards[index]));
+
+        card.appendChild(cardImg);
+        grid.appendChild(card);
+      }
+
+      content.appendChild(grid);
     },
     function (error) {
 
     }
   )
+}
+
+function loadCardInfo(card) {
+  console.log(card);
 }
 
 
