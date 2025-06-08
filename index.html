@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title></title>
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/card.css">
   <link id="theme" href="css/bootstrap-slate.css" rel="stylesheet">
   <meta name="description" content="">
 
@@ -32,7 +33,20 @@
   <div class="toast-container top-0 end-0 p-3">
     <div id="toastError" class="toast text-bg-danger" role="alert" aria-live="assertive" aria-atomic="true">
       <div class="d-flex">
-        <div id="message" class="toast-body">
+        <div id="messageError" class="toast-body">
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+  <div class="toast-container top-0 end-0 p-3">
+    <div id="toastSuccess" class="toast text-bg-primary" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div id="messageSuccess" class="toast-body">
         </div>
         <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
                 aria-label="Close"></button>
@@ -45,16 +59,10 @@
   <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
     <ul class="navbar-nav ms-auto">
       <li class="nav-item">
-        <a class="nav-link" href="#">Coleções</a>
+        <a class="nav-link" href="#" onclick="loadCollectionIndexes()">Coleções</a>
       </li>
-      <li id="wish" class="nav-item gone">
-        <a class="nav-link" href="#">Wish</a>
-      </li>
-      <li id="login" class="nav-item">
-        <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#modalLogin">Login</a>
-      </li>
-      <li id="logout" class="nav-item gone">
-        <a class="nav-link" href="#">Logout</a>
+      <li class="nav-item">
+        <a class="nav-link" href="#" onclick="loadWish()">Wish</a>
       </li>
     </ul>
   </div>
@@ -67,44 +75,17 @@
     <div class="collapse collapse-horizontal flex-inside" id="themeChoices">
       <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#themeChoices"
               aria-expanded="false" aria-controls="themeChoices"
-              onclick="changeTheme('light')"><img src="img/sun.svg" alt="light theme"></button>
+              onclick="changeTheme('light')"><img src="assets/auxiliaries/sun.svg" alt="light theme"></button>
       <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#themeChoices"
               aria-expanded="false" aria-controls="themeChoices"
-              onclick="changeTheme('dark')"><img src="img/moon.svg" alt="dark theme"></button>
+              onclick="changeTheme('dark')"><img src="assets/auxiliaries/moon.svg" alt="dark theme"></button>
     </div>
 
     <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#themeChoices"
             aria-expanded="false" aria-controls="themeChoices">
-      <img id="theme-selected" src="img/sun.svg" alt="theme selected">
+      <img id="theme-selected" src="assets/auxiliaries/sun.svg" alt="theme selected">
     </button>
   </div>
-</div>
-
-<div class="modal fade" id="modalLogin" tabindex="-1" aria-hidden="true">
-  <form class="needs-validation">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Login</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="form-floating mb-3">
-            <input type="email" class="form-control" id="email" placeholder="name@example.com">
-            <label for="email">Email</label>
-          </div>
-          <div class="form-floating">
-            <input type="password" class="form-control" id="password" placeholder="Password">
-            <label for="password">Senha</label>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button class="btn btn-primary" onclick="login()">Login</button>
-        </div>
-      </div>
-    </div>
-  </form>
 </div>
 
 </body>
