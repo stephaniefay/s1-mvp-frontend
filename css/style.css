@@ -24,6 +24,9 @@
 .card img {
   max-height: 150px;
   object-fit: contain;
+}
+
+.img-card {
   padding-top: 20px;
 }
 
@@ -159,4 +162,10 @@
 .image-container:hover .overlay {
   opacity: 1;
 }
+
+.align-right {
+  display: flex;
+  justify-content: flex-end
+}
+
 

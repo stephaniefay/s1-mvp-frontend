@@ -87,7 +87,27 @@ function showSuccessToast(messageStr) {
 // interactive functions
 
 // user related functions
-function loadWish() {
+function loadAllWishes() {
+  loadWishes().then(
+    function (response) {
+      const wishes = response.wishes
+
+      if (wishes != null) {
+        // load wishes
+      } else {
+        cleanContainer();
+
+
+
+      }
+
+    }
+  ), function (error) {
+    showErrorToast('Não foi possível carregar wishs, {}')
+  }
+}
+
+function loadWish(wishId) {
   loadCardsFromWish().then(
     function (cards) {
       cleanContainer();
@@ -133,10 +153,11 @@ function loadCollectionIndexes() {
   loadingAnimation();
 
   loadCollections().then(
-    function (collections) {
+    function (data) {
 
       cleanContainer();
 
+      const collections = data.sets
       const content = document.getElementById('content');
 
       const grid = document.createElement('div');
@@ -149,7 +170,7 @@ function loadCollectionIndexes() {
 
         // top image
         const cardImg = document.createElement('img');
-        cardImg.classList.add('card-img-top');
+        cardImg.classList.add('card-img-top', 'img-card');
         cardImg.alt = collections[index].name;
         cardImg.src = collections[index].images.logo;
 
@@ -304,10 +325,12 @@ function loadCollectionCards(collectionObj, searchTerm) {
   loadingAnimation();
 
   loadCardsFromCollection(collectionObj.id, searchTerm).then(
-    function (cards) {
+    function (data) {
       const content = document.getElementById('content');
 
       cleanContainer();
+
+      const cards = data.cards
 
       // breadcrumb
       const nav = document.createElement('nav');

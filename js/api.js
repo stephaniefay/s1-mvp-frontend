@@ -1,14 +1,23 @@
 
 async function loadCollections () {
-  // do load collections
-
-  return [];
+  return fetch('http://127.0.0.1:5000/sets').then(response => response.json().catch(err => {
+    console.error(`'${err}' happened loading collections`);
+    return {};
+  }))
 }
 
 async function loadCardsFromCollection (collection, search) {
-  // do load cards
+  return fetch('http://127.0.0.1:5000/sets/' + collection + '/cards').then(response => response.json().catch(err => {
+    console.error(`'${err}' happened in load cards from collection ${collection}`);
+    return {};
+  }))
+}
 
-  return []
+async function loadWishes () {
+  return fetch('http://127.0.0.1:5000/wishes').then(response => response.json().catch(err => {
+    console.error(`'${err}' happened loading wishes`);
+    return {};
+  }))
 }
 
 async function loadCardsFromWish (wish, search) {
