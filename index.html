@@ -11,13 +11,16 @@
   <link id="theme" href="css/bootstrap-slate.css" rel="stylesheet">
   <meta name="description" content="">
 
-  <link rel="icon" href="assets/auxiliaries/heart.svg" sizes="any" type="image/svg+xml">
+  <link rel="icon" href="assets/auxiliaries/sparkle.svg" sizes="any" type="image/svg+xml">
 
   <script src="js/index.js"></script>
   <script src="js/api.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"
           integrity="sha384-j1CDi7MgGQ12Z7Qab0qlWQ/Qqz24Gc6BM0thvEMVjHnfYGF0rmFCozFSxQBxwHKO"
           crossorigin="anonymous"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=WDXL+Lubrifont+JP+N&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -50,12 +53,13 @@
 
 <nav id="navbar" class="navbar navbar-expand-lg bg-primary sticky-top invisible">
   <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+    <a id="logo" class="navbar-brand wdxl-lubrifont-jp-n-regular" href="#" onclick="loadCollectionIndexes()"></a>
     <ul class="navbar-nav ms-auto">
       <li class="nav-item">
         <a class="nav-link" href="#" onclick="loadCollectionIndexes()">Coleções</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="#" onclick="loadAllWishes()">Lista de Desejos</a>
+        <a class="nav-link" href="#" onclick="loadAllWishes()">MyWishes</a>
       </li>
     </ul>
   </div>

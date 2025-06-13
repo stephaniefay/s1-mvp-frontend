@@ -10,7 +10,28 @@ window.addEventListener('load', function () {
   document.getElementById("content").classList.remove('invisible');
   document.getElementById("themeSelector").classList.remove('invisible');
   document.getElementById("navbar").classList.remove('invisible');
+
+  typeNavbar().then();
 });
+
+function sleep(milliseconds) {
+  return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+async function typeNavbar () {
+  const navbarName = 'MyWish';
+  const sparkle = '&#x2728;';
+  const speed = 100;
+
+  const logo = document.getElementById("logo");
+
+  for (let index = 0; index < navbarName.length; index++) {
+    logo.innerHTML += navbarName.charAt(index);
+    await sleep(speed).then()
+  }
+
+  logo.innerHTML += sparkle;
+}
 
 function changeTheme(theme) {
   const themeDOM = document.getElementById("theme");
