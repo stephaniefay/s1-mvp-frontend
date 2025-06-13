@@ -84,35 +84,110 @@ function showSuccessToast(messageStr) {
   toastBootstrap.show();
 }
 
+function getRandomHexColor() {
+  return '#' + Math.floor(Math.random() * 16777215).toString(16);
+}
+
 // interactive functions
 
-// user related functions
+// wishes functions
 function loadAllWishes() {
+  loadingAnimation();
+
   loadWishes().then(
     function (response) {
       const wishes = response.wishes
-
-      if (wishes != null) {
-        // load wishes
-      } else {
-        cleanContainer();
-
-
-
-      }
-
-    }
-  ), function (error) {
-    showErrorToast('Não foi possível carregar wishs, {}')
-  }
-}
-
-function loadWish(wishId) {
-  loadCardsFromWish().then(
-    function (cards) {
       cleanContainer();
 
       const content = document.getElementById('content');
+
+      const createWishDiv = document.createElement('div');
+      createWishDiv.classList.add('align-right');
+
+      const createWishButton = document.createElement('button');
+      createWishButton.classList.add('btn', 'btn-primary');
+      createWishButton.type = 'button';
+
+      const wishModal = new bootstrap.Modal(document.getElementById('createWishlist'));
+      createWishButton.innerText = 'Criar uma MyWish'
+      createWishButton.addEventListener("click", () => wishModal.show())
+
+      document.getElementById('createWishlist').addEventListener('hidden.bs.modal', function (event) {
+        document.getElementById('nameWishlist').value = '';
+        document.getElementById('descriptionTextarea').value = '';
+      });
+
+      createWishDiv.appendChild(createWishButton);
+      content.appendChild(createWishDiv);
+
+      const container = document.createElement('div')
+      container.classList.add('wish');
+      container.style.width = '100%';
+      container.style.height = '100%';
+
+      if (wishes != null) {
+        const list = document.createElement('ul');
+        list.classList.add();
+
+        for (let index = 0; index < wishes.length; index++) {
+          const item = document.createElement('li');
+          item.addEventListener('click', () => loadWish(wishes[index]));
+          item.classList.add('hvr-icon-pop', 'pointer');
+
+          if (wishes[index].color != null) {
+            item.style = '--accent-color:' + wishes[index].color;
+          } else {
+            item.style = '--accent-color:' + getRandomHexColor();
+          }
+
+          const icon = document.createElement('div');
+          icon.classList.add('icon');
+          icon.innerHTML = '<i class="fa-solid fa-star hvr-icon"></i>';
+          item.appendChild(icon);
+
+          const title = document.createElement('div');
+          title.classList.add('title');
+          title.innerText = wishes[index].name;
+          item.appendChild(title);
+
+          const description = document.createElement('div');
+          description.classList.add('descr');
+          description.innerText = wishes[index].description;
+          item.appendChild(description);
+
+          list.appendChild(item);
+        }
+        container.appendChild(list);
+
+        content.appendChild(container);
+
+      } else {
+
+      }
+    }, function (error) {
+      showErrorToast('Não foi possível carregar wishes, {}')
+    })
+}
+
+function loadWish(wishObj) {
+  loadingAnimation();
+
+  loadCardsFromWish(wishObj.id).then(
+    function (response) {
+      cleanContainer();
+      const cards = response.cards;
+
+      const content = document.getElementById('content');
+
+      // breadcrumb
+      const nav = document.createElement('nav');
+      nav.ariaLabel = 'breadcrumb';
+
+      const ol = loadNavigationWishLevel(wishObj);
+
+      nav.appendChild(ol);
+
+      content.appendChild(nav);
 
       const grid = document.createElement('div');
       grid.classList.add('row', 'justify-content-md-center');
@@ -130,12 +205,7 @@ function loadWish(wishId) {
         const overlay = document.createElement('div');
         overlay.classList.add('overlay');
 
-        const button = document.createElement('button');
-        button.classList.add('btn', 'btn-secondary', 'wish-button');
-        button.addEventListener('click', () => removeCardFromWish(cards[index]));
-        button.innerText = 'Remover da Wish';
-
-        overlay.appendChild(button);
+        buildOverlay(overlay, cards[index], 'remove', wishObj);
         card.appendChild(overlay);
 
         grid.appendChild(card);
@@ -146,6 +216,92 @@ function loadWish(wishId) {
       showErrorToast('Não foi possível carregar a wish, {}')
     }
   );
+}
+
+function loadNavigationWishLevel(wishObj) {
+  const ol = document.createElement('ol');
+  ol.classList.add('breadcrumb', 'bg-info');
+
+  const home = document.createElement('li');
+  home.classList.add('breadcrumb-item')
+
+  const homeLink = document.createElement('a');
+  homeLink.href = '#';
+  homeLink.addEventListener('click', () => loadAllWishes());
+  homeLink.innerText = 'Listas de Desejo';
+
+  home.appendChild(homeLink);
+
+  const collection = document.createElement('li');
+  collection.classList.add('breadcrumb-item', 'active');
+  collection.ariaCurrent = 'page';
+  collection.innerText = wishObj.name;
+
+  ol.appendChild(home);
+  ol.appendChild(collection);
+  return ol;
+}
+
+function loadColorPicker(value) {
+  const body = document.getElementById('formWishBody');
+  if (value === 'off') {
+    document.getElementById('useCustomColor').value = 'on';
+
+    const div = document.createElement('div');
+    div.classList.add('mb-3', 'center');
+    div.id = 'wishListColorPicker';
+
+    const label = document.createElement('label');
+    label.classList.add('form-label');
+    label.for = 'wishlistColor';
+    label.innerText = 'Escolha sua cor! ';
+    div.appendChild(label);
+
+    const input = document.createElement('input');
+    input.classList.add('form-control', 'form-control-color');
+    input.type = 'color';
+    input.id = 'wishlistColor';
+    input.value = '#563d7c';
+    input.title = 'Escolha a cor que preferir &#x2728;'
+    div.appendChild(input);
+
+    body.appendChild(div);
+  } else {
+    document.getElementById('useCustomColor').value = 'off';
+
+    body.removeChild(document.getElementById('wishListColorPicker'));
+  }
+}
+
+function createWishlist() {
+  const nameInput = document.getElementById('nameWishlist');
+  const descriptionInput = document.getElementById('descriptionTextarea');
+  const colorInput = document.getElementById('wishlistColor');
+
+  const modal = bootstrap.Modal.getInstance(document.getElementById('createWishlist'));
+  modal.hide()
+  const obj = {'name': nameInput.value, 'description': descriptionInput.value, 'color': (colorInput != null) ? colorInput.value : null}
+
+  createWish(obj).then(
+    function (response) {
+      loadAllWishes();
+    }, function (error) {
+      showErrorToast('Não foi possível criar uma lista de desejos, {}')
+    }
+  )
+}
+
+function addCardToWish (wishObj, cardObj) {
+  putCardInWish(wishObj.id, {'ids': [cardObj.id]}).then(response => {
+    showSuccessToast(response.message)
+  })
+}
+
+function removeCardFromWish (wishObj, cardObj) {
+  deleteCardFromWish(wishObj.id, {'ids': [cardObj.id]}).then(response => {
+    showSuccessToast(response.message);
+    loadWish(wishObj);
+  })
 }
 
 // collection functions
@@ -238,7 +394,7 @@ function loadCollectionIndexes() {
   )
 }
 
-function createItem (titleStr, valueStr) {
+function createItem(titleStr, valueStr) {
   const component = document.createElement('li');
   component.classList.add('list-group-item');
 
@@ -259,7 +415,7 @@ function createItem (titleStr, valueStr) {
   return component;
 }
 
-function createItemLegalities (titleStr, legalitiesObj) {
+function createItemLegalities(titleStr, legalitiesObj) {
   const component = document.createElement('li');
   component.classList.add('list-group-item');
 
@@ -390,23 +546,21 @@ function loadCardInfo(collectionObj, cardObj) {
   const columnOneThird = document.createElement('div');
   columnOneThird.classList.add('column', 'is-one-third', 'image-container');
 
+  const imgDiv = document.createElement('div');
+
   const cardImage = document.createElement('img');
   cardImage.classList.add('card-image');
   cardImage.src = cardObj.images.large;
 
-  columnOneThird.appendChild(cardImage);
+  imgDiv.appendChild(cardImage);
 
   const overlay = document.createElement('div');
   overlay.classList.add('overlay');
 
-  const button = document.createElement('button');
-  button.classList.add('btn', 'btn-secondary', 'wish-button');
-  button.addEventListener('click', () => putCardInWish(cardObj));
-  button.innerText = 'Adicionar a Wish';
+  buildOverlay(overlay, cardObj, 'add')
+  imgDiv.appendChild(overlay);
 
-  overlay.appendChild(button);
-  columnOneThird.appendChild(overlay);
-
+  columnOneThird.appendChild(imgDiv);
   grid.appendChild(columnOneThird);
 
   const column6 = document.createElement('div');
@@ -668,7 +822,61 @@ function loadCardInfo(collectionObj, cardObj) {
   content.appendChild(grid);
 }
 
-function buildColumnTextWithImage (titleStr, text, imgSrc, modifier) {
+function buildOverlay(overlay, cardObj, flag, wishObj) {
+  if (flag === 'add') {
+    loadWishes(cardObj.id).then(
+      function (response) {
+        const wishes = response.wishes;
+
+        const div = document.createElement('div');
+        div.classList.add('d-flex', 'justify-content-evenly', 'align-items-center');
+        div.style.height = '100%';
+        div.style.width = '100%';
+
+        const ul = document.createElement('ul');
+        ul.classList.add('list-group', 'list-group-flush', 'justify-content-evenly', 'align-items-stretch');
+        ul.style.width = '100%'
+        ul.style.height = '100%'
+        for (let index = 0; index < wishes.length; index++) {
+          const li = document.createElement('li');
+          li.classList.add('list-group-item', 'pointer', 'transparent', 'list-group-item-primary', 'text-center', 'hvr-icon-pop');
+          li.addEventListener('click', () => addCardToWish(wishes[index], cardObj));
+          li.innerHTML = '<i class="fa-solid fa-star hvr-icon"></i> Adicionar a ' + wishes[index].name;
+
+          ul.appendChild(li)
+        }
+
+        div.append(ul)
+        overlay.appendChild(div)
+      },
+      function (error) {
+
+      }
+    )
+  } else {
+    const div = document.createElement('div');
+    div.classList.add('d-flex', 'justify-content-evenly', 'align-items-center');
+    div.style.height = '100%';
+    div.style.width = '100%';
+
+    const ul = document.createElement('ul');
+    ul.classList.add('list-group', 'list-group-flush', 'justify-content-evenly', 'align-items-stretch');
+    ul.style.width = '100%'
+    ul.style.height = '100%'
+
+    const li = document.createElement('li');
+    li.classList.add('list-group-item', 'pointer', 'transparent', 'list-group-item-secondary', 'text-center', 'hvr-icon-fade');
+    li.addEventListener('click', () => removeCardFromWish(wishObj, cardObj));
+    li.innerHTML = '<i class="fa-solid fa-trash hvr-icon"></i> Remover da Lista';
+
+    ul.appendChild(li)
+
+    div.append(ul)
+    overlay.appendChild(div)
+  }
+}
+
+function buildColumnTextWithImage(titleStr, text, imgSrc, modifier) {
   const column = document.createElement('div');
   column.classList.add('column', 'is-one-third');
 
@@ -703,7 +911,7 @@ function buildColumnTextWithImage (titleStr, text, imgSrc, modifier) {
   return column;
 }
 
-function buildColumnOnlyText (titleStr, text, modifier) {
+function buildColumnOnlyText(titleStr, text, modifier) {
   const column = document.createElement('div');
   column.classList.add('column', 'is-one-third');
 
@@ -726,7 +934,7 @@ function buildColumnOnlyText (titleStr, text, modifier) {
   return column;
 }
 
-function buildColumnEnergyMultiple (titleStr, arrayObj, modifier) {
+function buildColumnEnergyMultiple(titleStr, arrayObj, modifier) {
   const column = document.createElement('div');
   column.classList.add('column', 'is-one-third');
 
@@ -760,7 +968,7 @@ function buildColumnEnergyMultiple (titleStr, arrayObj, modifier) {
   return column;
 }
 
-function buildColumnEnergySimple (titleStr, arrayObj, modifier) {
+function buildColumnEnergySimple(titleStr, arrayObj, modifier) {
   const column = document.createElement('div');
   column.classList.add('column', 'is-one-third');
 

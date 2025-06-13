@@ -4,21 +4,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title></title>
+  <title>MyWish</title>
+  <script src="https://kit.fontawesome.com/69b18153c2.js" crossorigin="anonymous"></script>
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/card.css">
   <link id="theme" href="css/bootstrap-slate.css" rel="stylesheet">
   <meta name="description" content="">
 
-  <meta property="og:title" content="">
-  <meta property="og:type" content="">
-  <meta property="og:url" content="">
-  <meta property="og:image" content="">
-  <meta property="og:image:alt" content="">
-
-  <link rel="icon" href="/favicon.ico" sizes="any">
-  <link rel="icon" href="/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="icon.png">
+  <link rel="icon" href="assets/auxiliaries/heart.svg" sizes="any" type="image/svg+xml">
 
   <script src="js/index.js"></script>
   <script src="js/api.js"></script>
@@ -85,6 +78,44 @@
             aria-expanded="false" aria-controls="themeChoices">
       <img id="theme-selected" src="assets/auxiliaries/sun.svg" alt="theme selected">
     </button>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="createWishlist" tabindex="-1" aria-labelledby="createWishlistLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Criar Lista de Desejos</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+        <div id="formWishBody" class="modal-body">
+          <div class="mb-3">
+            <label for="nameWishlist" class="form-label">Nome</label>
+            <input type="text" class="form-control" id="nameWishlist" aria-describedby="nameHelp">
+            <div id="nameHelp" class="form-text">Nome identificador da sua lista de desejos que deve ser único. (Seja
+              criativo! &#x2728;)
+            </div>
+          </div>
+          <div class="mb-3">
+            <label for="descriptionTextarea" class="form-label">Descrição</label>
+            <textarea class="form-control" id="descriptionTextarea" rows="3"
+                      aria-describedby="descriptionHelp"></textarea>
+            <div id="descriptionHelp" class="form-text">A descrição de sua lista de desejos, aqui você pode colocar
+              todos os detalhes que você gostaria!
+            </div>
+          </div>
+          <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" value="off" role="switch" id="useCustomColor"
+                   onchange="loadColorPicker(value)">
+            <label class="form-check-label" for="useCustomColor">Você gostaria de usar uma cor personalizada para a sua
+              lista? (ou quer confiar no destino e deixar a gente escolher por você? &#128302;)</label>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" onclick="createWishlist()">Criar!</button>
+        </div>
+    </div>
   </div>
 </div>
 
