@@ -19,6 +19,13 @@ async function loadWishes(search) {
   }))
 }
 
+async function loadWishesThatDontContainCard (cardId) {
+  return fetch('http://127.0.0.1:5000/wishes?card_id=' + cardId).then(response => response.json().catch(err => {
+    console.error(`'${err}' happened loading wishes`);
+    return {};
+  }))
+}
+
 async function loadCardsFromWish(wish, search) {
   return fetch('http://127.0.0.1:5000/wishes/' + wish + '/cards').then(response => response.json().catch(err => {
     console.error(`'${err}' happened loading wishes`);

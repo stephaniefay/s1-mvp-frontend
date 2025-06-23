@@ -845,7 +845,7 @@ function loadCardInfo(collectionObj, cardObj) {
 
 function buildOverlay(overlay, cardObj, flag, wishObj) {
   if (flag === 'add') {
-    loadWishes(cardObj.id).then(
+    loadWishesThatDontContainCard(cardObj.id).then(
       function (response) {
         const wishes = response.wishes;
 
