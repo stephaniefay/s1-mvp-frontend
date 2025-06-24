@@ -12,4 +12,4 @@ uma consulta rápida depois.
 Esse projeto não requer nenhuma instalação prévia de nenhum componente. Para a execução, basta rodar o arquivo `index.html`
 contido dentro do projeto para a exibição da aplicação.
 
-Para que seja obtivo resultados, será necessário que a API backend esteja em execução e alcançável.
+Para que seja obtido resultados, será necessário que a API backend esteja em execução e alcançável.
