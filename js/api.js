@@ -1,40 +1,44 @@
+const url = 'http://127.0.0.1:5000';
+
 async function loadCollections() {
-  return fetch('http://127.0.0.1:5000/sets').then(response => response.json().catch(err => {
+  return fetch(url + '/sets').then(response => response.json().catch(err => {
     console.error(`'${err}' happened loading collections`);
     return {};
   }))
 }
 
 async function loadCardsFromCollection(collection, search) {
-  return fetch('http://127.0.0.1:5000/sets/' + collection + '/cards').then(response => response.json().catch(err => {
+  const query = (search != null && search !== '') ? '?search=' + search : '';
+  return fetch(url + '/sets/' + collection + '/cards' + query).then(response => response.json().catch(err => {
     console.error(`'${err}' happened in load cards from collection ${collection}`);
     return {};
   }))
 }
 
 async function loadWishes(search) {
-  return fetch('http://127.0.0.1:5000/wishes').then(response => response.json().catch(err => {
+  return fetch(url + '/wishes').then(response => response.json().catch(err => {
     console.error(`'${err}' happened loading wishes`);
     return {};
   }))
 }
 
 async function loadWishesThatDontContainCard (cardId) {
-  return fetch('http://127.0.0.1:5000/wishes?card_id=' + cardId).then(response => response.json().catch(err => {
+  return fetch(url + '/wishes?card_id=' + cardId).then(response => response.json().catch(err => {
     console.error(`'${err}' happened loading wishes`);
     return {};
   }))
 }
 
 async function loadCardsFromWish(wish, search) {
-  return fetch('http://127.0.0.1:5000/wishes/' + wish + '/cards').then(response => response.json().catch(err => {
+  const query = (search != null && search !== '') ? '?search=' + search : '';
+  return fetch(url + '/wishes/' + wish + '/cards' + query).then(response => response.json().catch(err => {
     console.error(`'${err}' happened loading wishes`);
     return {};
   }))
 }
 
 async function createWish(wish) {
-  return fetch('http://127.0.0.1:5000/wishes', {
+  return fetch(url + '/wishes', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(wish)
@@ -47,7 +51,7 @@ async function createWish(wish) {
 }
 
 async function putCardInWish(wish, card) {
-  return fetch('http://127.0.0.1:5000/wishes/' + wish, {
+  return fetch(url + '/wishes/' + wish, {
     method: 'PUT',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(card)
@@ -60,7 +64,7 @@ async function putCardInWish(wish, card) {
 }
 
 async function deleteCardFromWish(wish, card) {
-  return fetch('http://127.0.0.1:5000/wishes/' + wish + '/card', {
+  return fetch(url + '/wishes/' + wish + '/card', {
     method: 'DELETE',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify(card)

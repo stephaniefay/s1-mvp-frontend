@@ -5,7 +5,7 @@ window.addEventListener('load', function () {
     changeTheme(currentTheme);
   }
 
-  loadCollectionIndexes();
+  loadLastComponent();
 
   document.getElementById("content").classList.remove('invisible');
   document.getElementById("themeSelector").classList.remove('invisible');
@@ -13,6 +13,39 @@ window.addEventListener('load', function () {
 
   typeNavbar().then();
 });
+
+function loadLastComponent () {
+  const lastLoadedPage = localStorage.getItem('lastPage');
+  console.log(lastLoadedPage);
+
+  switch (lastLoadedPage) {
+    case 'collection':
+      const collectionObj = localStorage.getItem('collection');
+      loadCollectionCards(JSON.parse(collectionObj));
+      break;
+    case 'card':
+      const cardObj = localStorage.getItem('card');
+      const collectionCardObj = localStorage.getItem('collection');
+      loadCardInfo(JSON.parse(collectionCardObj), JSON.parse(cardObj));
+      break;
+    case 'wishes':
+      loadAllWishes();
+      break;
+    case 'wish':
+      const wishObj = localStorage.getItem('wish');
+      loadWish(JSON.parse(wishObj));
+      break;
+    default:
+      loadCollectionIndexes();
+  }
+}
+
+function clearLocalStorage () {
+  localStorage.removeItem('lastPage');
+  localStorage.removeItem('collection');
+  localStorage.removeItem('card');
+  localStorage.removeItem('wish');
+}
 
 function sleep(milliseconds) {
   return new Promise(resolve => setTimeout(resolve, milliseconds));
@@ -109,11 +142,45 @@ function getRandomHexColor() {
   return '#' + Math.floor(Math.random() * 16777215).toString(16);
 }
 
+function buildInputSearch(parent, currentSearch, func) {
+  const groupInput = document.createElement('div');
+  groupInput.classList.add('group-input');
+
+  const searchIcon = document.createElement('i');
+  searchIcon.classList.add('fa-solid', 'fa-magnifying-glass', 'icon-search');
+  groupInput.appendChild(searchIcon);
+
+  const searchInput = document.createElement('input');
+  searchInput.classList.add('input-search');
+  searchInput.placeholder = 'Buscar...';
+
+  if (currentSearch != null)
+    searchInput.value = currentSearch;
+
+  searchInput.addEventListener('keyup', finishTyping( () => {
+    func(parent, searchInput.value);
+  }, 1000))
+
+  groupInput.appendChild(searchInput);
+  return groupInput;
+}
+
+function finishTyping(callback, wait) {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(function () { callback.apply(this, args); }, wait);
+  };
+}
+
 // interactive functions
 
 // wishes functions
 function loadAllWishes() {
   loadingAnimation();
+
+  clearLocalStorage();
+  localStorage.setItem('lastPage', 'wishes');
 
   loadWishes().then(
     function (response) {
@@ -190,24 +257,44 @@ function loadAllWishes() {
     })
 }
 
-function loadWish(wishObj) {
+function loadWish(wishObj, searchTerm) {
   loadingAnimation();
 
-  loadCardsFromWish(wishObj.id).then(
+  clearLocalStorage();
+  localStorage.setItem('lastPage', 'wish');
+  localStorage.setItem('wish', JSON.stringify(wishObj));
+
+  loadCardsFromWish(wishObj.id, searchTerm).then(
     function (response) {
       cleanContainer();
       const cards = response.cards;
 
       const content = document.getElementById('content');
 
+      const nav = document.createElement('div');
+      nav.classList.add('row')
+
+      const left = document.createElement('div');
+      left.classList.add('col-10');
+
       // breadcrumb
-      const nav = document.createElement('nav');
-      nav.ariaLabel = 'breadcrumb';
+      const breadcrumb = document.createElement('nav');
+      breadcrumb.ariaLabel = 'breadcrumb';
 
       const ol = loadNavigationWishLevel(wishObj);
 
-      nav.appendChild(ol);
+      breadcrumb.appendChild(ol);
 
+      left.appendChild(breadcrumb);
+      nav.appendChild(left);
+
+      const right = document.createElement('div');
+      right.classList.add('col-2');
+
+      const groupInput = buildInputSearch(wishObj, searchTerm, loadWish);
+
+      right.appendChild(groupInput);
+      nav.appendChild(right);
       content.appendChild(nav);
 
       const grid = document.createElement('div');
@@ -329,12 +416,14 @@ function removeCardFromWish (wishObj, cardObj) {
 function loadCollectionIndexes() {
   loadingAnimation();
 
+  clearLocalStorage();
+
   loadCollections().then(
     function (data) {
 
       cleanContainer();
 
-      const collections = data.sets
+      const collections = data.sets;
       const content = document.getElementById('content');
 
       const grid = document.createElement('div');
@@ -501,22 +590,42 @@ function loadNavigationCollectionLevel(collectionObj) {
 function loadCollectionCards(collectionObj, searchTerm) {
   loadingAnimation();
 
+  clearLocalStorage();
+  localStorage.setItem('lastPage', 'collection');
+  localStorage.setItem('collection', JSON.stringify(collectionObj));
+
   loadCardsFromCollection(collectionObj.id, searchTerm).then(
     function (data) {
       const content = document.getElementById('content');
 
       cleanContainer();
 
-      const cards = data.cards
+      const cards = data.cards;
+
+      const nav = document.createElement('div');
+      nav.classList.add('row')
+
+      const left = document.createElement('div');
+      left.classList.add('col-10');
 
       // breadcrumb
-      const nav = document.createElement('nav');
-      nav.ariaLabel = 'breadcrumb';
+      const breadcrumb = document.createElement('nav');
+      breadcrumb.ariaLabel = 'breadcrumb';
 
       const ol = loadNavigationCollectionLevel(collectionObj);
 
-      nav.appendChild(ol);
+      breadcrumb.appendChild(ol);
 
+      left.appendChild(breadcrumb);
+      nav.appendChild(left);
+
+      const right = document.createElement('div');
+      right.classList.add('col-2');
+
+      const groupInput = buildInputSearch(collectionObj, searchTerm, loadCollectionCards);
+
+      right.appendChild(groupInput);
+      nav.appendChild(right);
       content.appendChild(nav);
 
       // cards
@@ -549,6 +658,12 @@ function loadCollectionCards(collectionObj, searchTerm) {
 // card functions
 function loadCardInfo(collectionObj, cardObj) {
   cleanContainer();
+
+  clearLocalStorage();
+  localStorage.setItem('lastPage', 'card');
+  localStorage.setItem('collection', JSON.stringify(collectionObj));
+  localStorage.setItem('card', JSON.stringify(cardObj));
+
   const content = document.getElementById('content');
 
   // breadcrumb
