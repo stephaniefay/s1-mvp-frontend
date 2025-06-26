@@ -93,29 +93,18 @@ function loadingAnimation() {
 
   const content = document.getElementById('content');
 
-  const loadingDiv = document.createElement('div');
-  loadingDiv.id = 'loading';
-  loadingDiv.classList.add('center');
+  const loadingContent = document.createElement('div');
+  loadingContent.classList.add('container-loading');
 
-  const loaderDiv = document.createElement('div');
-  loaderDiv.classList.add('loader');
+  const firstRipple = document.createElement('span');
+  const secondRipple = document.createElement('span');
+  const thirdRipple = document.createElement('span');
 
-  const circle1 = document.createElement('div');
-  circle1.classList.add('circle');
-  const circle2 = document.createElement('div');
-  circle2.classList.add('circle');
-  const circle3 = document.createElement('div');
-  circle3.classList.add('circle');
-  const circle4 = document.createElement('div');
-  circle4.classList.add('circle');
+  loadingContent.appendChild(firstRipple);
+  loadingContent.appendChild(secondRipple);
+  loadingContent.appendChild(thirdRipple);
 
-  loaderDiv.appendChild(circle1);
-  loaderDiv.appendChild(circle2);
-  loaderDiv.appendChild(circle3);
-  loaderDiv.appendChild(circle4);
-
-  loadingDiv.appendChild(loaderDiv);
-  content.appendChild(loadingDiv);
+  content.appendChild(loadingContent);
 }
 
 function showErrorToast(messageStr) {
