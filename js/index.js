@@ -76,7 +76,7 @@ function changeTheme(theme) {
       document.getElementById("theme-selected").src = 'assets/auxiliaries/sun.svg';
       break;
     case 'dark':
-      themeDOM.href = 'css/bootstrap-slate.css';
+      themeDOM.href = 'css/bootstrap-cyborg.css';
       localStorage.setItem('theme', theme);
       document.getElementById("theme-selected").src = 'assets/auxiliaries/moon.svg';
       break;
